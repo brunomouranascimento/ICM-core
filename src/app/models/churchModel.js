@@ -1,5 +1,4 @@
 const mongoose = require('../../database/database');
-const bcrypt = require('bcryptjs');
 
 const ChurchSchema = new mongoose.Schema({
   name: {
