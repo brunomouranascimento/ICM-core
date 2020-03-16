@@ -17,13 +17,6 @@ const ChurchSchema = new mongoose.Schema({
   }
 });
 
-ChurchSchema.pre('save', async function(next) {
-  const hash = await bcrypt.hash(this.password, 10);
-  this.password = hash;
-
-  next();
-});
-
 const Church = mongoose.model('Church', ChurchSchema);
 
 module.exports = Church;

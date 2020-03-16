@@ -3,7 +3,7 @@ const Result = require('../../app/models/core/resultModel');
 
 module.exports = {
   async index(request, response) {
-    const churchs = await Church.find();
+    const churchs = await Church.find().populate(['user']);
     return response.status(200).send(
       new Result({
         data: churchs,
@@ -52,7 +52,8 @@ module.exports = {
           message: 'Church inserted.'
         })
       );
-    } catch {
+    } catch (err) {
+      console.log(err);
       return response.status(400).send(
         new Result({
           notificationLevel: 'Error',
