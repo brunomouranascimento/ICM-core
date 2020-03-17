@@ -1,121 +1,114 @@
-const Church = require('../models/churchModel');
-const Result = require('../../app/models/core/resultModel');
+const Song = require('../models/songModel');
+const Result = require('../models/core/resultModel');
 
 module.exports = {
   async index(request, response) {
     try {
-      const churchs = await Church.find().populate(['createdBy', 'updatedBy']);
+      const songs = await Song.find().populate('user');
       return response.status(200).send(
         new Result({
-          data: churchs,
+          data: songs,
           notificationLevel: 'Success',
-          message: 'Churchs loaded.'
+          message: 'Songs loaded.'
         })
       );
-    } catch (err) {
-      return response.status(400).send(
-        new Result({
-          notificationLevel: 'Error',
-          message: 'Error on finding churchs.'
-        })
-      );
-    }
+    } catch (err) {}
   },
   async show(request, response) {
     try {
-      const church = await Church.findById(request.params.id);
+      const song = await Song.findById(request.params.id);
 
       return response.status(200).send(
         new Result({
-          data: church,
+          data: song,
           notificationLevel: 'Success',
-          message: 'Church founded.'
+          message: 'Song founded.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
           notificationLevel: 'Error',
-          message: 'Error on finding church.'
+          message: 'Error on finding song.'
         })
       );
     }
   },
   async store(request, response) {
     try {
-      const { name, address } = request.body;
+      const { name, theme } = request.body;
 
-      const church = await Church.create({
+      const song = await Song.create({
         name,
-        address,
+        theme: Song.schema.path('theme').enumValues[theme],
         createdBy: request.userId
       });
 
-      await church.save();
+      await song.save();
 
       return response.status(200).send(
         new Result({
-          data: church,
+          data: song,
           notificationLevel: 'Success',
-          message: 'Church inserted.'
+          message: 'Song inserted.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
           notificationLevel: 'Error',
-          message: 'Error on inserting church.'
+          message: 'Error on inserting song.'
         })
       );
     }
   },
   async update(request, response) {
     try {
-      const { name, address } = request.body;
+      const { name, theme } = request.body;
 
-      const church = await Church.findByIdAndUpdate(
+      const song = await Song.findByIdAndUpdate(
         request.params.id,
         {
           name,
-          address
+          theme: Song.schema.path('theme').enumValues[theme]
         },
         { new: true }
       );
 
-      church.updatedAt = new Date();
-      church.updatedBy = request.userId;
+      song.updatedAt = new Date();
+      song.updatedBy = request.userId;
 
-      await church.save();
+      await song.save();
       return response.status(200).send(
         new Result({
-          data: church,
+          data: song,
           notificationLevel: 'Success',
-          message: 'Church updated.'
+          message: 'Song updated.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
           notificationLevel: 'Error',
-          message: 'Error on updating church.'
+          message: 'Error on updating song.'
         })
       );
     }
   },
   async destroy(request, response) {
     try {
-      await Church.findByIdAndRemove(request.params.id);
+      await Song.findByIdAndRemove(request.params.id);
       return response.status(200).send(
         new Result({
           notificationLevel: 'Success',
-          message: 'Church removed.'
+          message: 'Song removed.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
           notificationLevel: 'Error',
-          message: 'Error on removing church.'
+          message: 'Error on removing song.'
         })
       );
     }

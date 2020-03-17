@@ -157,6 +157,7 @@ module.exports = {
         );
 
       user.password = password;
+      user.updatedAt = new Date();
 
       await user.save();
 

@@ -10,10 +10,21 @@ const ChurchSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  user: {
+  createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    require: true
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date
+  },
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
 });
 
