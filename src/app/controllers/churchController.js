@@ -8,8 +8,10 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: churchs,
-          notificationLevel: 'Success',
-          message: 'Churchs loaded.'
+          notificationLevel: churchs.length ? 'Success' : 'Waring',
+          message: churchs.length
+            ? 'Churchs loaded.'
+            : 'There are no churchs registered.'
         })
       );
     } catch (err) {
@@ -24,12 +26,11 @@ module.exports = {
   async show(request, response) {
     try {
       const church = await Church.findById(request.params.id);
-
       return response.status(200).send(
         new Result({
           data: church,
-          notificationLevel: 'Success',
-          message: 'Church founded.'
+          notificationLevel: church !== null ? 'Success' : 'Warning',
+          message: church !== null ? 'Church founded.' : 'Church not founded.'
         })
       );
     } catch (err) {

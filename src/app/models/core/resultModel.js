@@ -8,8 +8,7 @@ const ResultSchema = new mongoose.Schema(
       required: true
     },
     data: {
-      type: mongoose.Schema.Types.Mixed,
-      required: true
+      type: mongoose.Schema.Types.Mixed
     },
     message: {
       type: String

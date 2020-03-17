@@ -8,8 +8,10 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: songs,
-          notificationLevel: 'Success',
-          message: 'Songs loaded.'
+          notificationLevel: songs.length ? 'Success' : 'Warning',
+          message: songs.length
+            ? 'Songs loaded.'
+            : 'There are no songs registered.'
         })
       );
     } catch (err) {}
@@ -17,12 +19,11 @@ module.exports = {
   async show(request, response) {
     try {
       const song = await Song.findById(request.params.id);
-
       return response.status(200).send(
         new Result({
           data: song,
-          notificationLevel: 'Success',
-          message: 'Song founded.'
+          notificationLevel: song !== null ? 'Success' : 'Warning',
+          message: song !== null ? 'Song founded.' : 'Song not founded'
         })
       );
     } catch (err) {

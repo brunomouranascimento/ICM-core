@@ -6,6 +6,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-require('./app/routes/routes')(app);
+require('./app/routes/core/routes')(app);
 
 app.listen(3333);
