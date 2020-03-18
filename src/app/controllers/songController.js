@@ -14,7 +14,14 @@ module.exports = {
             : 'There are no songs registered.'
         })
       );
-    } catch (err) {}
+    } catch (err) {
+      return response.status(400).send(
+        new Result({
+          notificationLevel: 'Error',
+          message: 'Error on finding songs.'
+        })
+      );
+    }
   },
   async show(request, response) {
     try {

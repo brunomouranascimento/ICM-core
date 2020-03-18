@@ -1,5 +1,5 @@
 const Church = require('../models/churchModel');
-const Result = require('../../app/models/core/resultModel');
+const Result = require('../models/core/resultModel');
 
 module.exports = {
   async index(request, response) {
