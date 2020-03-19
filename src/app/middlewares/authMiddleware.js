@@ -9,7 +9,7 @@ module.exports = (request, response, next) => {
     const authHeader = request.headers.authorization;
     if (
       request.originalUrl === '/authenticate' ||
-      request.originalUrl === '/authenticate' ||
+      request.originalUrl === '/register' ||
       request.originalUrl === '/forgot-password' ||
       request.originalUrl === '/reset-password'
     ) {

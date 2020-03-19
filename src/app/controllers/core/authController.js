@@ -55,7 +55,7 @@ module.exports = {
       const user = await User.findOne({ email }).select('+password');
 
       if (!user)
-        return response.status(401).send(
+        return response.status(200).send(
           new Result({
             notificationLevel: 'Error',
             message: 'User not found.'
@@ -63,7 +63,7 @@ module.exports = {
         );
 
       if (!(await bcrypt.compare(password, user.password)))
-        return response.status(401).send(
+        return response.status(200).send(
           new Result({
             notificationLevel: 'Error',
             message: 'Invalid user/password.'
@@ -80,7 +80,7 @@ module.exports = {
         })
       );
     } catch (err) {
-      response.status(400).send(
+      response.status(200).send(
         new Result({
           notificationLevel: 'Error',
           message: 'Error on authenticate, try again.'
@@ -96,7 +96,7 @@ module.exports = {
       const user = await User.findOne({ email });
 
       if (!user)
-        return response.status(400).send(
+        return response.status(200).send(
           new Result({
             notificationLevel: 'Error',
             message: 'User not found.'
@@ -122,7 +122,7 @@ module.exports = {
         })
       );
     } catch (err) {
-      response.status(400).send(
+      response.status(200).send(
         new Result({
           notificationLevel: 'Error',
           message: 'Error on forgot password, try again.'
@@ -140,7 +140,7 @@ module.exports = {
       );
 
       if (!user)
-        return response.status(400).send(
+        return response.status(200).send(
           new Result({
             notificationLevel: 'Error',
             message: 'User not found.'
@@ -148,7 +148,7 @@ module.exports = {
         );
 
       if (token !== user.passwordResetToken)
-        return response.status(400).send(
+        return response.status(200).send(
           new Result({
             notificationLevel: 'Error',
             message: 'invalid token.'
@@ -158,7 +158,7 @@ module.exports = {
       const now = new Date();
 
       if (now > user.passwordResetExpires)
-        return res.status(400).send(
+        return res.status(200).send(
           new Result({
             notificationLevel: 'Error',
             message: 'Token expired, generate a new one.'
@@ -177,7 +177,7 @@ module.exports = {
         })
       );
     } catch (err) {
-      response.status(400).send(
+      response.status(200).send(
         new Result({
           notificationLevel: 'Error',
           message: 'Cannot reset password, try again.'

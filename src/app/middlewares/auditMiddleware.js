@@ -4,7 +4,7 @@ module.exports = (request, response, next) => {
   try {
     if (
       request.originalUrl === '/authenticate' ||
-      request.originalUrl === '/authenticate' ||
+      request.originalUrl === '/register' ||
       request.originalUrl === '/forgot-password' ||
       request.originalUrl === '/reset-password'
     ) {
