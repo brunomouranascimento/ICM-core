@@ -2,87 +2,95 @@ const Audit = require('../models/core/auditModel');
 
 module.exports = (request, response, next) => {
   try {
-    const requestStart = Date.now();
-    const log = (request, response, errorMessage) => {
-      const {
-        rawHeaders,
-        httpVersion,
-        method,
-        socket,
-        url,
-        userId,
-        body
-      } = request;
-      const { remoteAddress, remoteFamily } = socket;
-
-      const { statusCode, statusMessage } = response;
-      const headers = response.getHeaders();
-
-      const audit = Audit.create({
-        statusCode,
-        statusMessage,
-        user: userId,
-        route: url,
-        method,
-        body,
-        processingTime: Date.now() - requestStart,
-        completeAudit: JSON.stringify({
-          timestamp: Date.now(),
+    if (
+      request.originalUrl === '/authenticate' ||
+      request.originalUrl === '/authenticate' ||
+      request.originalUrl === '/forgot-password' ||
+      request.originalUrl === '/reset-password'
+    ) {
+      return next();
+    } else {
+      const requestStart = Date.now();
+      const log = async (request, response, errorMessage) => {
+        const {
           rawHeaders,
-          errorMessage,
           httpVersion,
-          remoteAddress,
-          remoteFamily,
-          response: {
-            statusCode,
-            statusMessage,
-            headers
-          }
-        })
-      });
-    };
+          method,
+          socket,
+          url,
+          userId,
+          body
+        } = request;
+        const { remoteAddress, remoteFamily } = socket;
 
-    let body = [];
-    let requestErrorMessage = null;
+        const { statusCode, statusMessage } = response;
+        const headers = response.getHeaders();
 
-    const getChunk = (chunk) => body.push(chunk);
-    const assembleBody = () => {
-      body = Buffer.concat(body).toString();
-    };
-    const getError = (error) => {
-      requestErrorMessage = error.message;
-    };
-    request.on('data', getChunk);
-    request.on('end', assembleBody);
-    request.on('error', getError);
+        Audit.create({
+          statusCode,
+          statusMessage,
+          user: userId,
+          route: url,
+          method,
+          body,
+          processingTime: Date.now() - requestStart,
+          completeAudit: JSON.stringify({
+            timestamp: Date.now(),
+            rawHeaders,
+            errorMessage,
+            httpVersion,
+            remoteAddress,
+            remoteFamily,
+            response: {
+              statusCode,
+              statusMessage,
+              headers
+            }
+          })
+        });
+      };
 
-    const logClose = () => {
-      removeHandlers();
-      log(request, response, 'Client aborted.');
-    };
-    const logError = (error) => {
-      removeHandlers();
-      log(request, response, error.message);
-    };
-    const logFinish = () => {
-      removeHandlers();
-      log(request, response, requestErrorMessage);
-    };
-    response.on('close', logClose);
-    response.on('error', logError);
-    response.on('finish', logFinish);
+      let body = [];
+      let requestErrorMessage = null;
 
-    const removeHandlers = () => {
-      request.off('data', getChunk);
-      request.off('end', assembleBody);
-      request.off('error', getError);
-      response.off('close', logClose);
-      response.off('error', logError);
-      response.off('finish', logFinish);
-    };
+      const getChunk = (chunk) => body.push(chunk);
+      const assembleBody = () => {
+        body = Buffer.concat(body).toString();
+      };
+      const getError = (error) => {
+        requestErrorMessage = error.message;
+      };
+      request.on('data', getChunk);
+      request.on('end', assembleBody);
+      request.on('error', getError);
 
+      const logClose = () => {
+        removeHandlers();
+        log(request, response, 'Client aborted.');
+      };
+      const logError = (error) => {
+        removeHandlers();
+        log(request, response, error.message);
+      };
+      const logFinish = () => {
+        removeHandlers();
+        log(request, response, requestErrorMessage);
+      };
+      response.on('close', logClose);
+      response.on('error', logError);
+      response.on('finish', logFinish);
+
+      const removeHandlers = () => {
+        request.off('data', getChunk);
+        request.off('end', assembleBody);
+        request.off('error', getError);
+        response.off('close', logClose);
+        response.off('error', logError);
+        response.off('finish', logFinish);
+      };
+    }
     next();
   } catch (err) {
-    console.log(err);
+    response.status(400).send({ err });
   }
 };

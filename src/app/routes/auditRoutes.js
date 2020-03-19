@@ -1,11 +1,11 @@
 const { Router } = require('express');
 
-const authMiddleware = require('../middlewares/authMiddleware');
+const auditMiddleware = require('../middlewares/auditMiddleware');
 const auditController = require('../controllers/core/auditController');
 
 const routes = Router();
 
-routes.use(authMiddleware);
+routes.use(auditMiddleware);
 
 routes.get('/audits', auditController.index);
 

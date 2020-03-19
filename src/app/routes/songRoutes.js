@@ -1,11 +1,8 @@
 const { Router } = require('express');
 
-const authMiddleware = require('../middlewares/authMiddleware');
 const songController = require('../controllers/songController');
 
 const routes = Router();
-
-routes.use(authMiddleware);
 
 routes.get('/songs', songController.index);
 routes.get('/song/:id', songController.show);

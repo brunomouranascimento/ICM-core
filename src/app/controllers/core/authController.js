@@ -49,35 +49,44 @@ module.exports = {
   },
 
   async authenticate(request, response) {
-    const { email, password } = request.body;
+    try {
+      const { email, password } = request.body;
 
-    const user = await User.findOne({ email }).select('+password');
+      const user = await User.findOne({ email }).select('+password');
 
-    if (!user)
-      return response.status(401).send(
+      if (!user)
+        return response.status(401).send(
+          new Result({
+            notificationLevel: 'Error',
+            message: 'User not found.'
+          })
+        );
+
+      if (!(await bcrypt.compare(password, user.password)))
+        return response.status(401).send(
+          new Result({
+            notificationLevel: 'Error',
+            message: 'Invalid user/password.'
+          })
+        );
+
+      user.password = undefined;
+      user.token = generateToken({ id: user.id });
+
+      response.send(
         new Result({
-          notificationLevel: 'Error',
-          message: 'User not found.'
+          data: user,
+          notificationLevel: 'Success'
         })
       );
-
-    if (!(await bcrypt.compare(password, user.password)))
-      return response.status(401).send(
+    } catch (err) {
+      response.status(400).send(
         new Result({
           notificationLevel: 'Error',
-          message: 'Invalid user/password.'
+          message: 'Error on authenticate, try again.'
         })
       );
-
-    user.password = undefined;
-    user.token = generateToken({ id: user.id });
-
-    response.send(
-      new Result({
-        data: user,
-        notificationLevel: 'Success'
-      })
-    );
+    }
   },
 
   async forgotPassword(request, response) {

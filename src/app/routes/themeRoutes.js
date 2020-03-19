@@ -1,13 +1,8 @@
 const { Router } = require('express');
 
-const authMiddleware = require('../middlewares/authMiddleware');
-const auditMiddleware = require('../middlewares/auditMiddleware');
 const themeController = require('../controllers/themeController');
 
 const routes = Router();
-
-routes.use(authMiddleware);
-routes.use(auditMiddleware);
 
 routes.get('/themes', themeController.index);
 routes.get('/theme/:id', themeController.show);
