@@ -17,7 +17,7 @@ module.exports = {
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on finding churchs.'
         })
       );
@@ -29,14 +29,15 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: church,
-          notificationLevel: church !== null ? 'Success' : 'Warning',
+          error: church !== null ? false : true,
+          success: church !== null ? true : false,
           message: church !== null ? 'Church founded.' : 'Church not founded.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on finding church.'
         })
       );
@@ -57,14 +58,14 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: church,
-          notificationLevel: 'Success',
+          success: true,
           message: 'Church inserted.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on inserting church.'
         })
       );
@@ -90,14 +91,14 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: church,
-          notificationLevel: 'Success',
+          success: true,
           message: 'Church updated.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on updating church.'
         })
       );
@@ -108,14 +109,14 @@ module.exports = {
       await Church.findByIdAndRemove(request.params.id);
       return response.status(200).send(
         new Result({
-          notificationLevel: 'Success',
+          success: true,
           message: 'Church removed.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on removing church.'
         })
       );

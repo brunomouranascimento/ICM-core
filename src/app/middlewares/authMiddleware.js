@@ -18,7 +18,7 @@ module.exports = (request, response, next) => {
       if (!authHeader)
         return response.status(401).send(
           new Result({
-            notificationLevel: 'Error',
+            error: true,
             message: 'No token provided.'
           })
         );
@@ -28,7 +28,7 @@ module.exports = (request, response, next) => {
       if (!parts.length === 2)
         return response.status(401).send(
           new Result({
-            notificationLevel: 'Error',
+            error: true,
             message: 'Token error.'
           })
         );
@@ -38,7 +38,7 @@ module.exports = (request, response, next) => {
       if (!/^Bearer$/i.test(scheme))
         return response.status(401).send(
           new Result({
-            notificationLevel: 'Error',
+            error: true,
             message: 'Malformatted token.'
           })
         );
@@ -47,7 +47,7 @@ module.exports = (request, response, next) => {
         if (err)
           return response.status(401).send(
             new Result({
-              notificationLevel: 'Error',
+              error: true,
               message: 'Invalid token or expired.'
             })
           );

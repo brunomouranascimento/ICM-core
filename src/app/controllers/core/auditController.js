@@ -8,7 +8,8 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: audits,
-          notificationLevel: audits.length ? 'Success' : 'Warning',
+          error: audits.length !== null ? false : true,
+          success: audits.length !== null ? true : false,
           message: audits.length
             ? 'Audits loaded.'
             : 'There are no audits registered.'

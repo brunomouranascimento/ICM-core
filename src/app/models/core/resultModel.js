@@ -2,10 +2,11 @@ const mongoose = require('../../../database/database');
 
 const ResultSchema = new mongoose.Schema(
   {
-    notificationLevel: {
-      type: String,
-      enum: ['Success', 'Error', 'Warning', 'Timeout'],
-      required: true
+    success: {
+      type: Boolean
+    },
+    error: {
+      type: Boolean
     },
     data: {
       type: mongoose.Schema.Types.Mixed

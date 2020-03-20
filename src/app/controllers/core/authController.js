@@ -21,7 +21,7 @@ module.exports = {
       if (await User.findOne({ email }))
         return response.status(400).send(
           new Result({
-            notificationLevel: 'Warning',
+            error: true,
             message: 'User already exists.'
           })
         );
@@ -30,10 +30,10 @@ module.exports = {
 
       user.password = undefined;
 
-      return response.status(400).send(
+      return response.status(200).send(
         new Result({
           data: user,
-          notificationLevel: 'Success',
+          success: true,
           message: 'User created.',
           token: generateToken({ id: user.id })
         })
@@ -41,7 +41,7 @@ module.exports = {
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Registration failed.'
         })
       );
@@ -55,17 +55,17 @@ module.exports = {
       const user = await User.findOne({ email }).select('+password');
 
       if (!user)
-        return response.status(200).send(
+        return response.status(400).send(
           new Result({
-            notificationLevel: 'Error',
+            error: true,
             message: 'User not found.'
           })
         );
 
       if (!(await bcrypt.compare(password, user.password)))
-        return response.status(200).send(
+        return response.status(401).send(
           new Result({
-            notificationLevel: 'Error',
+            error: true,
             message: 'Invalid user/password.'
           })
         );
@@ -76,13 +76,13 @@ module.exports = {
       response.send(
         new Result({
           data: user,
-          notificationLevel: 'Success'
+          success: true
         })
       );
     } catch (err) {
-      response.status(200).send(
+      response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on authenticate, try again.'
         })
       );
@@ -98,7 +98,7 @@ module.exports = {
       if (!user)
         return response.status(200).send(
           new Result({
-            notificationLevel: 'Error',
+            error: true,
             message: 'User not found.'
           })
         );
@@ -116,7 +116,7 @@ module.exports = {
       });
       return response.status(200).send(
         new Result({
-          notificationLevel: 'Success',
+          success: true,
           message: 'Sended token.',
           resetPasswordToken: token
         })
@@ -124,7 +124,7 @@ module.exports = {
     } catch (err) {
       response.status(200).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on forgot password, try again.'
         })
       );
@@ -142,7 +142,7 @@ module.exports = {
       if (!user)
         return response.status(200).send(
           new Result({
-            notificationLevel: 'Error',
+            error: true,
             message: 'User not found.'
           })
         );
@@ -150,7 +150,7 @@ module.exports = {
       if (token !== user.passwordResetToken)
         return response.status(200).send(
           new Result({
-            notificationLevel: 'Error',
+            error: true,
             message: 'invalid token.'
           })
         );
@@ -160,7 +160,7 @@ module.exports = {
       if (now > user.passwordResetExpires)
         return res.status(200).send(
           new Result({
-            notificationLevel: 'Error',
+            error: true,
             message: 'Token expired, generate a new one.'
           })
         );
@@ -172,14 +172,14 @@ module.exports = {
 
       response.send(
         new Result({
-          notificationLevel: 'Success',
+          success: true,
           message: 'Password updated.'
         })
       );
     } catch (err) {
       response.status(200).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Cannot reset password, try again.'
         })
       );

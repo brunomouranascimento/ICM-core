@@ -9,7 +9,8 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: themes,
-          notificationLevel: themes.length ? 'Success' : 'Warning',
+          error: themes.length !== null ? false : true,
+          success: themes.length !== null ? true : false,
           message: themes.length
             ? 'Themes loaded.'
             : 'There are no themes registered.'
@@ -18,7 +19,7 @@ module.exports = {
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on finding themes.'
         })
       );
@@ -30,14 +31,15 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: theme,
-          notificationLevel: theme !== null ? 'Success' : 'Warning',
+          error: theme !== null ? false : true,
+          success: theme !== null ? true : false,
           message: theme !== null ? 'Theme founded.' : 'Theme not founded'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on finding theme.'
         })
       );
@@ -74,14 +76,14 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: theme,
-          notificationLevel: 'Success',
+          success: true,
           message: 'Theme inserted.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on inserting theme.'
         })
       );
@@ -124,14 +126,14 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: theme,
-          notificationLevel: 'Success',
+          success: true,
           message: 'Theme updated.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on updating theme.'
         })
       );
@@ -142,14 +144,14 @@ module.exports = {
       await Theme.findByIdAndRemove(request.params.id);
       return response.status(200).send(
         new Result({
-          notificationLevel: 'Success',
+          success: true,
           message: 'Theme removed.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on removing theme.'
         })
       );

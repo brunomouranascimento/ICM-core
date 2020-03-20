@@ -8,7 +8,8 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: songs,
-          notificationLevel: songs.length ? 'Success' : 'Warning',
+          error: songs.length !== null ? false : true,
+          success: songs.length !== null ? true : false,
           message: songs.length
             ? 'Songs loaded.'
             : 'There are no songs registered.'
@@ -17,7 +18,7 @@ module.exports = {
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on finding songs.'
         })
       );
@@ -29,14 +30,15 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: song,
-          notificationLevel: song !== null ? 'Success' : 'Warning',
+          error: song !== null ? false : true,
+          success: song !== null ? true : false,
           message: song !== null ? 'Song founded.' : 'Song not founded'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on finding song.'
         })
       );
@@ -57,14 +59,14 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: song,
-          notificationLevel: 'Success',
+          success: true,
           message: 'Song inserted.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on inserting song.'
         })
       );
@@ -90,14 +92,14 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: song,
-          notificationLevel: 'Success',
+          success: true,
           message: 'Song updated.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on updating song.'
         })
       );
@@ -108,14 +110,14 @@ module.exports = {
       await Song.findByIdAndRemove(request.params.id);
       return response.status(200).send(
         new Result({
-          notificationLevel: 'Success',
+          success: true,
           message: 'Song removed.'
         })
       );
     } catch (err) {
       return response.status(400).send(
         new Result({
-          notificationLevel: 'Error',
+          error: true,
           message: 'Error on removing song.'
         })
       );
