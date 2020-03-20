@@ -1,4 +1,4 @@
-const Audit = require('../models/core/auditModel');
+const Audit = require('../models/auditModel');
 
 module.exports = (request, response, next) => {
   try {

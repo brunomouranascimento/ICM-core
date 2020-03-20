@@ -5,13 +5,12 @@ const crypto = require('crypto');
 const authConfig = require('../../../config/authConfig.json');
 
 const User = require('../../models/userModel');
-const Result = require('../../models/core/resultModel');
 
-function generateToken(params = {}) {
+const generateToken = (params = {}) => {
   return jwt.sign(params, authConfig.secret, {
     expiresIn: 86400
   });
-}
+};
 
 module.exports = {
   async register(request, response) {
@@ -19,32 +18,23 @@ module.exports = {
       const { email } = request.body;
 
       if (await User.findOne({ email }))
-        return response.status(400).send(
-          new Result({
-            error: true,
-            message: 'User already exists.'
-          })
-        );
+        return response.status(400).send({
+          message: 'User already exists.'
+        });
 
       const user = await User.create(request.body);
 
       user.password = undefined;
 
-      return response.status(200).send(
-        new Result({
-          data: user,
-          success: true,
-          message: 'User created.',
-          token: generateToken({ id: user.id })
-        })
-      );
+      return response.status(200).send({
+        data: user,
+        message: 'User created.',
+        token: generateToken({ id: user.id })
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Registration failed.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Registration failed.'
+      });
     }
   },
 
@@ -55,37 +45,25 @@ module.exports = {
       const user = await User.findOne({ email }).select('+password');
 
       if (!user)
-        return response.status(400).send(
-          new Result({
-            error: true,
-            message: 'User not found.'
-          })
-        );
+        return response.status(400).send({
+          message: 'User not found.'
+        });
 
       if (!(await bcrypt.compare(password, user.password)))
-        return response.status(401).send(
-          new Result({
-            error: true,
-            message: 'Invalid user/password.'
-          })
-        );
+        return response.status(401).send({
+          message: 'Invalid user/password.'
+        });
 
       user.password = undefined;
       user.token = generateToken({ id: user.id });
 
-      response.send(
-        new Result({
-          data: user,
-          success: true
-        })
-      );
+      response.send({
+        data: user
+      });
     } catch (err) {
-      response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on authenticate, try again.'
-        })
-      );
+      response.status(400).send({
+        message: 'Error on authenticate, try again.'
+      });
     }
   },
 
@@ -96,12 +74,9 @@ module.exports = {
       const user = await User.findOne({ email });
 
       if (!user)
-        return response.status(200).send(
-          new Result({
-            error: true,
-            message: 'User not found.'
-          })
-        );
+        return response.status(400).send({
+          message: 'User not found.'
+        });
 
       const token = crypto.randomBytes(20).toString('hex');
 
@@ -114,20 +89,14 @@ module.exports = {
           passwordResetExpires: now
         }
       });
-      return response.status(200).send(
-        new Result({
-          success: true,
-          message: 'Sended token.',
-          resetPasswordToken: token
-        })
-      );
+      return response.status(200).send({
+        message: 'Sended token.',
+        resetPasswordToken: token
+      });
     } catch (err) {
-      response.status(200).send(
-        new Result({
-          error: true,
-          message: 'Error on forgot password, try again.'
-        })
-      );
+      response.status(400).send({
+        message: 'Error on forgot password, try again.'
+      });
     }
   },
 
@@ -140,49 +109,34 @@ module.exports = {
       );
 
       if (!user)
-        return response.status(200).send(
-          new Result({
-            error: true,
-            message: 'User not found.'
-          })
-        );
+        return response.status(400).send({
+          message: 'User not found.'
+        });
 
       if (token !== user.passwordResetToken)
-        return response.status(200).send(
-          new Result({
-            error: true,
-            message: 'invalid token.'
-          })
-        );
+        return response.status(401).send({
+          message: 'invalid token.'
+        });
 
       const now = new Date();
 
       if (now > user.passwordResetExpires)
-        return res.status(200).send(
-          new Result({
-            error: true,
-            message: 'Token expired, generate a new one.'
-          })
-        );
+        return res.status(401).send({
+          message: 'Token expired, generate a new one.'
+        });
 
       user.password = password;
       user.updatedAt = new Date();
 
       await user.save();
 
-      response.send(
-        new Result({
-          success: true,
-          message: 'Password updated.'
-        })
-      );
+      response.status(200).send({
+        message: 'Password updated.'
+      });
     } catch (err) {
-      response.status(200).send(
-        new Result({
-          error: true,
-          message: 'Cannot reset password, try again.'
-        })
-      );
+      response.status(400).send({
+        message: 'Cannot reset password, try again.'
+      });
     }
   }
 };

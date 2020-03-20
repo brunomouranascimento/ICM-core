@@ -1,47 +1,32 @@
 const Song = require('../models/songModel');
-const Result = require('../models/core/resultModel');
 
 module.exports = {
   async index(request, response) {
     try {
       const songs = await Song.find().populate('user');
-      return response.status(200).send(
-        new Result({
-          data: songs,
-          error: songs.length !== null ? false : true,
-          success: songs.length !== null ? true : false,
-          message: songs.length
-            ? 'Songs loaded.'
-            : 'There are no songs registered.'
-        })
-      );
+      return response.status(200).send({
+        data: songs,
+        message: songs.length
+          ? 'Songs loaded.'
+          : 'There are no songs registered.'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on finding songs.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on finding songs.'
+      });
     }
   },
   async show(request, response) {
     try {
       const song = await Song.findById(request.params.id);
-      return response.status(200).send(
-        new Result({
-          data: song,
-          error: song !== null ? false : true,
-          success: song !== null ? true : false,
-          message: song !== null ? 'Song founded.' : 'Song not founded'
-        })
-      );
+      return response.status(200).send({
+        data: song,
+        message: song !== null ? 'Song founded.' : 'Song not founded'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on finding song.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on finding song.'
+      });
     }
   },
   async store(request, response) {
@@ -59,17 +44,13 @@ module.exports = {
       return response.status(200).send(
         new Result({
           data: song,
-          success: true,
           message: 'Song inserted.'
         })
       );
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on inserting song.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on inserting song.'
+      });
     }
   },
   async update(request, response) {
@@ -89,38 +70,26 @@ module.exports = {
       song.updatedBy = request.userId;
 
       await song.save();
-      return response.status(200).send(
-        new Result({
-          data: song,
-          success: true,
-          message: 'Song updated.'
-        })
-      );
+      return response.status(200).send({
+        data: song,
+        message: 'Song updated.'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on updating song.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on updating song.'
+      });
     }
   },
   async destroy(request, response) {
     try {
       await Song.findByIdAndRemove(request.params.id);
-      return response.status(200).send(
-        new Result({
-          success: true,
-          message: 'Song removed.'
-        })
-      );
+      return response.status(200).send({
+        message: 'Song removed.'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on removing song.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on removing song.'
+      });
     }
   }
 };

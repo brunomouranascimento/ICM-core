@@ -1,46 +1,32 @@
 const Church = require('../models/churchModel');
-const Result = require('../models/core/resultModel');
 
 module.exports = {
   async index(request, response) {
     try {
       const churchs = await Church.find().populate(['createdBy', 'updatedBy']);
-      return response.status(200).send(
-        new Result({
-          data: churchs,
-          notificationLevel: churchs.length ? 'Success' : 'Waring',
-          message: churchs.length
-            ? 'Churchs loaded.'
-            : 'There are no churchs registered.'
-        })
-      );
+      return response.status(200).send({
+        data: churchs,
+        message: churchs.length
+          ? 'Churchs loaded.'
+          : 'There are no churchs registered.'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on finding churchs.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on finding churchs.'
+      });
     }
   },
   async show(request, response) {
     try {
       const church = await Church.findById(request.params.id);
-      return response.status(200).send(
-        new Result({
-          data: church,
-          error: church !== null ? false : true,
-          success: church !== null ? true : false,
-          message: church !== null ? 'Church founded.' : 'Church not founded.'
-        })
-      );
+      return response.status(200).send({
+        data: church,
+        message: church !== null ? 'Church founded.' : 'Church not founded.'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on finding church.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on finding church.'
+      });
     }
   },
   async store(request, response) {
@@ -55,20 +41,14 @@ module.exports = {
 
       await church.save();
 
-      return response.status(200).send(
-        new Result({
-          data: church,
-          success: true,
-          message: 'Church inserted.'
-        })
-      );
+      return response.status(200).send({
+        data: church,
+        message: 'Church inserted.'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on inserting church.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on inserting church.'
+      });
     }
   },
   async update(request, response) {
@@ -88,17 +68,13 @@ module.exports = {
       church.updatedBy = request.userId;
 
       await church.save();
-      return response.status(200).send(
-        new Result({
-          data: church,
-          success: true,
-          message: 'Church updated.'
-        })
-      );
+      return response.status(200).send({
+        data: church,
+        message: 'Church updated.'
+      });
     } catch (err) {
       return response.status(400).send(
         new Result({
-          error: true,
           message: 'Error on updating church.'
         })
       );
@@ -107,19 +83,13 @@ module.exports = {
   async destroy(request, response) {
     try {
       await Church.findByIdAndRemove(request.params.id);
-      return response.status(200).send(
-        new Result({
-          success: true,
-          message: 'Church removed.'
-        })
-      );
+      return response.status(200).send({
+        message: 'Church removed.'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on removing church.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on removing church.'
+      });
     }
   }
 };

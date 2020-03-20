@@ -1,48 +1,33 @@
 const Theme = require('../models/themeModel');
 const Song = require('../models/songModel');
-const Result = require('../models/core/resultModel');
 
 module.exports = {
   async index(request, response) {
     try {
       const themes = await Theme.find().populate(['user', 'songs']);
-      return response.status(200).send(
-        new Result({
-          data: themes,
-          error: themes.length !== null ? false : true,
-          success: themes.length !== null ? true : false,
-          message: themes.length
-            ? 'Themes loaded.'
-            : 'There are no themes registered.'
-        })
-      );
+      return response.status(200).send({
+        data: themes,
+        message: themes.length
+          ? 'Themes loaded.'
+          : 'There are no themes registered.'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on finding themes.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on finding themes.'
+      });
     }
   },
   async show(request, response) {
     try {
       const theme = await Theme.findById(request.params.id);
-      return response.status(200).send(
-        new Result({
-          data: theme,
-          error: theme !== null ? false : true,
-          success: theme !== null ? true : false,
-          message: theme !== null ? 'Theme founded.' : 'Theme not founded'
-        })
-      );
+      return response.status(200).send({
+        data: theme,
+        message: theme !== null ? 'Theme founded.' : 'Theme not founded'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on finding theme.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on finding theme.'
+      });
     }
   },
   async store(request, response) {
@@ -73,20 +58,14 @@ module.exports = {
 
       await theme.save();
 
-      return response.status(200).send(
-        new Result({
-          data: theme,
-          success: true,
-          message: 'Theme inserted.'
-        })
-      );
+      return response.status(200).send({
+        data: theme,
+        message: 'Theme inserted.'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on inserting theme.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on inserting theme.'
+      });
     }
   },
   async update(request, response) {
@@ -123,38 +102,26 @@ module.exports = {
 
       await theme.save();
 
-      return response.status(200).send(
-        new Result({
-          data: theme,
-          success: true,
-          message: 'Theme updated.'
-        })
-      );
+      return response.status(200).send({
+        data: theme,
+        message: 'Theme updated.'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on updating theme.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on updating theme.'
+      });
     }
   },
   async destroy(request, response) {
     try {
       await Theme.findByIdAndRemove(request.params.id);
-      return response.status(200).send(
-        new Result({
-          success: true,
-          message: 'Theme removed.'
-        })
-      );
+      return response.status(200).send({
+        message: 'Theme removed.'
+      });
     } catch (err) {
-      return response.status(400).send(
-        new Result({
-          error: true,
-          message: 'Error on removing theme.'
-        })
-      );
+      return response.status(400).send({
+        message: 'Error on removing theme.'
+      });
     }
   }
 };
