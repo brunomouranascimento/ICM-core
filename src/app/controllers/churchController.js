@@ -1,6 +1,6 @@
 const Church = require('../models/churchModel');
 
-module.exports = {
+class ChurchController {
   async index(request, response) {
     try {
       const churchs = await Church.find().populate(['createdBy', 'updatedBy']);
@@ -15,7 +15,8 @@ module.exports = {
         message: 'Error on finding churchs.'
       });
     }
-  },
+  }
+
   async show(request, response) {
     try {
       const church = await Church.findById(request.params.id);
@@ -28,7 +29,8 @@ module.exports = {
         message: 'Error on finding church.'
       });
     }
-  },
+  }
+
   async store(request, response) {
     try {
       const { name, address } = request.body;
@@ -50,7 +52,8 @@ module.exports = {
         message: 'Error on inserting church.'
       });
     }
-  },
+  }
+
   async update(request, response) {
     try {
       const { name, address } = request.body;
@@ -79,7 +82,8 @@ module.exports = {
         })
       );
     }
-  },
+  }
+
   async destroy(request, response) {
     try {
       await Church.findByIdAndRemove(request.params.id);
@@ -92,4 +96,6 @@ module.exports = {
       });
     }
   }
-};
+}
+
+module.exports = new ChurchController();

@@ -1,7 +1,7 @@
 const Theme = require('../models/themeModel');
 const Song = require('../models/songModel');
 
-module.exports = {
+class ThemeController {
   async index(request, response) {
     try {
       const themes = await Theme.find().populate(['user', 'songs']);
@@ -16,7 +16,8 @@ module.exports = {
         message: 'Error on finding themes.'
       });
     }
-  },
+  }
+
   async show(request, response) {
     try {
       const theme = await Theme.findById(request.params.id);
@@ -29,7 +30,8 @@ module.exports = {
         message: 'Error on finding theme.'
       });
     }
-  },
+  }
+
   async store(request, response) {
     try {
       const { name, songs } = request.body;
@@ -67,7 +69,8 @@ module.exports = {
         message: 'Error on inserting theme.'
       });
     }
-  },
+  }
+
   async update(request, response) {
     try {
       const { name, songs } = request.body;
@@ -111,7 +114,8 @@ module.exports = {
         message: 'Error on updating theme.'
       });
     }
-  },
+  }
+
   async destroy(request, response) {
     try {
       await Theme.findByIdAndRemove(request.params.id);
@@ -124,4 +128,6 @@ module.exports = {
       });
     }
   }
-};
+}
+
+module.exports = new ThemeController();

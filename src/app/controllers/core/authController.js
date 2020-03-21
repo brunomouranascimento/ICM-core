@@ -12,7 +12,7 @@ const generateToken = (params = {}) => {
   });
 };
 
-module.exports = {
+class AuthControler {
   async register(request, response) {
     try {
       const { email } = request.body;
@@ -36,7 +36,7 @@ module.exports = {
         message: 'Registration failed.'
       });
     }
-  },
+  }
 
   async authenticate(request, response) {
     try {
@@ -65,7 +65,7 @@ module.exports = {
         message: 'Error on authenticate, try again.'
       });
     }
-  },
+  }
 
   async forgotPassword(request, response) {
     const { email } = request.body;
@@ -98,7 +98,7 @@ module.exports = {
         message: 'Error on forgot password, try again.'
       });
     }
-  },
+  }
 
   async resetPassword(request, response) {
     const { email, token, password } = request.body;
@@ -139,4 +139,6 @@ module.exports = {
       });
     }
   }
-};
+}
+
+module.exports = new AuthControler();

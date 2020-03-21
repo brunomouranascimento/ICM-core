@@ -1,6 +1,6 @@
 const Song = require('../models/songModel');
 
-module.exports = {
+class SongController {
   async index(request, response) {
     try {
       const songs = await Song.find().populate('user');
@@ -15,7 +15,8 @@ module.exports = {
         message: 'Error on finding songs.'
       });
     }
-  },
+  }
+
   async show(request, response) {
     try {
       const song = await Song.findById(request.params.id);
@@ -28,7 +29,8 @@ module.exports = {
         message: 'Error on finding song.'
       });
     }
-  },
+  }
+
   async store(request, response) {
     try {
       const { name, theme } = request.body;
@@ -52,7 +54,8 @@ module.exports = {
         message: 'Error on inserting song.'
       });
     }
-  },
+  }
+
   async update(request, response) {
     try {
       const { name, theme } = request.body;
@@ -79,7 +82,8 @@ module.exports = {
         message: 'Error on updating song.'
       });
     }
-  },
+  }
+
   async destroy(request, response) {
     try {
       await Song.findByIdAndRemove(request.params.id);
@@ -92,4 +96,6 @@ module.exports = {
       });
     }
   }
-};
+}
+
+module.exports = new SongController();
