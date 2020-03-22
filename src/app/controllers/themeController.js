@@ -5,14 +5,14 @@ class ThemeController {
   async index(request, response) {
     try {
       const themes = await Theme.find().populate(['user', 'songs']);
-      return response.status(200).send({
+      response.status(200).send({
         data: themes,
         message: themes.length
           ? 'Themes loaded.'
           : 'There are no themes registered.'
       });
     } catch (err) {
-      return response.status(400).send({
+      response.status(400).send({
         message: 'Error on finding themes.'
       });
     }
@@ -21,12 +21,12 @@ class ThemeController {
   async show(request, response) {
     try {
       const theme = await Theme.findById(request.params.id);
-      return response.status(200).send({
+      response.status(200).send({
         data: theme,
         message: theme !== null ? 'Theme founded.' : 'Theme not founded'
       });
     } catch (err) {
-      return response.status(400).send({
+      response.status(400).send({
         message: 'Error on finding theme.'
       });
     }
@@ -60,12 +60,12 @@ class ThemeController {
 
       await theme.save();
 
-      return response.status(200).send({
+      response.status(200).send({
         data: theme,
         message: 'Theme inserted.'
       });
     } catch (err) {
-      return response.status(400).send({
+      response.status(400).send({
         message: 'Error on inserting theme.'
       });
     }
@@ -105,12 +105,12 @@ class ThemeController {
 
       await theme.save();
 
-      return response.status(200).send({
+      response.status(200).send({
         data: theme,
         message: 'Theme updated.'
       });
     } catch (err) {
-      return response.status(400).send({
+      response.status(400).send({
         message: 'Error on updating theme.'
       });
     }
@@ -119,11 +119,11 @@ class ThemeController {
   async destroy(request, response) {
     try {
       await Theme.findByIdAndRemove(request.params.id);
-      return response.status(200).send({
+      response.status(200).send({
         message: 'Theme removed.'
       });
     } catch (err) {
-      return response.status(400).send({
+      response.status(400).send({
         message: 'Error on removing theme.'
       });
     }

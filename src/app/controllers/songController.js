@@ -4,14 +4,14 @@ class SongController {
   async index(request, response) {
     try {
       const songs = await Song.find().populate('user');
-      return response.status(200).send({
+      response.status(200).send({
         data: songs,
         message: songs.length
           ? 'Songs loaded.'
           : 'There are no songs registered.'
       });
     } catch (err) {
-      return response.status(400).send({
+      response.status(400).send({
         message: 'Error on finding songs.'
       });
     }
@@ -20,12 +20,12 @@ class SongController {
   async show(request, response) {
     try {
       const song = await Song.findById(request.params.id);
-      return response.status(200).send({
+      response.status(200).send({
         data: song,
         message: song !== null ? 'Song founded.' : 'Song not founded'
       });
     } catch (err) {
-      return response.status(400).send({
+      response.status(400).send({
         message: 'Error on finding song.'
       });
     }
@@ -43,14 +43,14 @@ class SongController {
 
       await song.save();
 
-      return response.status(200).send(
+      response.status(200).send(
         new Result({
           data: song,
           message: 'Song inserted.'
         })
       );
     } catch (err) {
-      return response.status(400).send({
+      response.status(400).send({
         message: 'Error on inserting song.'
       });
     }
@@ -73,12 +73,12 @@ class SongController {
       song.updatedBy = request.userId;
 
       await song.save();
-      return response.status(200).send({
+      response.status(200).send({
         data: song,
         message: 'Song updated.'
       });
     } catch (err) {
-      return response.status(400).send({
+      response.status(400).send({
         message: 'Error on updating song.'
       });
     }
@@ -87,11 +87,11 @@ class SongController {
   async destroy(request, response) {
     try {
       await Song.findByIdAndRemove(request.params.id);
-      return response.status(200).send({
+      response.status(200).send({
         message: 'Song removed.'
       });
     } catch (err) {
-      return response.status(400).send({
+      response.status(400).send({
         message: 'Error on removing song.'
       });
     }

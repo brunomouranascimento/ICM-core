@@ -18,7 +18,7 @@ class AuthControler {
       const { email } = request.body;
 
       if (await User.findOne({ email }))
-        return response.status(400).send({
+        response.status(400).send({
           message: 'User already exists.'
         });
 
@@ -26,13 +26,13 @@ class AuthControler {
 
       user.password = undefined;
 
-      return response.status(200).send({
+      response.status(200).send({
         data: user,
         message: 'User created.',
         token: generateToken({ id: user.id })
       });
     } catch (err) {
-      return response.status(400).send({
+      response.status(400).send({
         message: 'Registration failed.'
       });
     }
@@ -45,12 +45,12 @@ class AuthControler {
       const user = await User.findOne({ email }).select('+password');
 
       if (!user)
-        return response.status(400).send({
+        response.status(400).send({
           message: 'User not found.'
         });
 
       if (!(await bcrypt.compare(password, user.password)))
-        return response.status(401).send({
+        response.status(401).send({
           message: 'Invalid user/password.'
         });
 
@@ -74,7 +74,7 @@ class AuthControler {
       const user = await User.findOne({ email });
 
       if (!user)
-        return response.status(400).send({
+        response.status(400).send({
           message: 'User not found.'
         });
 
@@ -89,7 +89,7 @@ class AuthControler {
           passwordResetExpires: now
         }
       });
-      return response.status(200).send({
+      response.status(200).send({
         message: 'Sended token.',
         resetPasswordToken: token
       });
@@ -109,19 +109,19 @@ class AuthControler {
       );
 
       if (!user)
-        return response.status(400).send({
+        response.status(400).send({
           message: 'User not found.'
         });
 
       if (token !== user.passwordResetToken)
-        return response.status(401).send({
+        response.status(401).send({
           message: 'invalid token.'
         });
 
       const now = new Date();
 
       if (now > user.passwordResetExpires)
-        return res.status(401).send({
+        response.status(401).send({
           message: 'Token expired, generate a new one.'
         });
 
