@@ -13,10 +13,12 @@ module.exports = (request, response, next) => {
     ) {
       return next();
     } else {
-      if (!authHeader)
+      if (!authHeader) {
         response.status(401).send({
           message: 'No token provided.'
         });
+        return next();
+      }
 
       const parts = authHeader.split(' ');
 
