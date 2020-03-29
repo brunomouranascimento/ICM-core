@@ -35,13 +35,14 @@ module.exports = (request, response, next) => {
         });
 
       jwt.verify(token, authConfig.secret, (err, decoded) => {
-        if (err)
+        if (!err) {
+          request.userId = decoded.id;
+          return next();
+        } else {
           response.status(401).send({
             message: 'Invalid token or expired.'
           });
-
-        request.userId = decoded.id;
-        return next();
+        }
       });
     }
   } catch (err) {
