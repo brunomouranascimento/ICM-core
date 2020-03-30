@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
 const authConfig = require('../../../config/authConfig.json');
+const transporter = require('../../../config/mailConfig');
 
 const User = require('../../models/userModel');
 
@@ -17,20 +18,28 @@ class AuthControler {
     try {
       const { email } = request.body;
 
-      if (await User.findOne({ email }))
+      if (await User.findOne({ email })) {
         response.status(400).send({
           message: 'User already exists.'
         });
+      } else {
+        const user = await User.create(request.body);
 
-      const user = await User.create(request.body);
+        await transporter.sendMail({
+          to: email,
+          from: 'icm@listadelouvores.com',
+          subject: 'Signup succeeded',
+          html: '<h1>You successfully signed up!</h1>'
+        });
 
-      user.password = undefined;
+        user.password = undefined;
 
-      response.status(200).send({
-        data: user,
-        message: 'User created.',
-        token: generateToken({ id: user.id })
-      });
+        response.status(200).send({
+          data: user,
+          message: 'User created, confirmation e-mail sended.',
+          token: generateToken({ id: user.id })
+        });
+      }
     } catch (err) {
       response.status(400).send({
         message: 'Registration failed.'
