@@ -91,6 +91,6 @@ module.exports = (request, response, next) => {
     }
     next();
   } catch (err) {
-    response.status(400).send({ err });
+    return response.status(400).send({ err });
   }
 };

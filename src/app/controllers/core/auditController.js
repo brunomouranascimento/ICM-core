@@ -4,7 +4,7 @@ class AuditController {
   async index(request, response) {
     try {
       const audits = await Audit.find().populate('user');
-      response.status(200).send({
+      return response.status(200).send({
         data: audits,
         message: audits.length
           ? 'Audits loaded.'

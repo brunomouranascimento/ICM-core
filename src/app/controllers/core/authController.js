@@ -19,7 +19,7 @@ class AuthControler {
       const { email } = request.body;
 
       if (await User.findOne({ email })) {
-        response.status(400).send({
+        return response.status(400).send({
           message: 'User already exists.'
         });
       } else {
@@ -28,20 +28,20 @@ class AuthControler {
         await transporter.sendMail({
           to: email,
           from: 'icm@listadelouvores.com',
-          subject: 'Signup succeeded',
-          html: '<h1>You successfully signed up!</h1>'
+          subject: 'Cadastro realizado',
+          html: '<h1>Seu cadastro foi realizado com sucesso!</h1>'
         });
 
         user.password = undefined;
 
-        response.status(200).send({
+        return response.status(200).send({
           data: user,
           message: 'User created, confirmation e-mail sended.',
           token: generateToken({ id: user.id })
         });
       }
     } catch (err) {
-      response.status(400).send({
+      return response.status(400).send({
         message: 'Registration failed.'
       });
     }
@@ -54,12 +54,12 @@ class AuthControler {
       const user = await User.findOne({ email }).select('+password');
 
       if (!user)
-        response.status(400).send({
+        return response.status(400).send({
           message: 'User not found.'
         });
 
       if (!(await bcrypt.compare(password, user.password)))
-        response.status(401).send({
+        return response.status(401).send({
           message: 'Invalid user/password.'
         });
 
@@ -70,8 +70,9 @@ class AuthControler {
         data: user
       });
     } catch (err) {
-      response.status(400).send({
-        message: 'Error on authenticate, try again.'
+      return response.status(400).send({
+        message: 'Error on authenticate, try again.',
+        text: err
       });
     }
   }
@@ -83,7 +84,7 @@ class AuthControler {
       const user = await User.findOne({ email });
 
       if (!user)
-        response.status(400).send({
+        return response.status(400).send({
           message: 'User not found.'
         });
 
@@ -98,12 +99,12 @@ class AuthControler {
           passwordResetExpires: now
         }
       });
-      response.status(200).send({
+      return response.status(200).send({
         message: 'Sended token.',
         resetPasswordToken: token
       });
     } catch (err) {
-      response.status(400).send({
+      return response.status(400).send({
         message: 'Error on forgot password, try again.'
       });
     }
@@ -118,19 +119,19 @@ class AuthControler {
       );
 
       if (!user)
-        response.status(400).send({
+        return response.status(400).send({
           message: 'User not found.'
         });
 
       if (token !== user.passwordResetToken)
-        response.status(401).send({
+        return response.status(401).send({
           message: 'invalid token.'
         });
 
       const now = new Date();
 
       if (now > user.passwordResetExpires)
-        response.status(401).send({
+        return response.status(401).send({
           message: 'Token expired, generate a new one.'
         });
 
@@ -139,11 +140,11 @@ class AuthControler {
 
       await user.save();
 
-      response.status(200).send({
+      return response.status(200).send({
         message: 'Password updated.'
       });
     } catch (err) {
-      response.status(400).send({
+      return response.status(400).send({
         message: 'Cannot reset password, try again.'
       });
     }

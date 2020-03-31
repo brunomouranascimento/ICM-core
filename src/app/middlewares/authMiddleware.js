@@ -13,39 +13,35 @@ module.exports = (request, response, next) => {
     ) {
       return next();
     } else {
-      if (!authHeader) {
-        response.status(401).send({
+      if (!authHeader)
+        return response.status(401).send({
           message: 'No token provided.'
         });
-        return next();
-      }
 
       const parts = authHeader.split(' ');
 
       if (!parts.length === 2)
-        response.status(401).send({
+        return response.status(401).send({
           message: 'Token error.'
         });
 
       const [scheme, token] = parts;
 
       if (!/^Bearer$/i.test(scheme))
-        response.status(401).send({
+        return response.status(401).send({
           message: 'Malformatted token.'
         });
 
       jwt.verify(token, authConfig.secret, (err, decoded) => {
-        if (!err) {
-          request.userId = decoded.id;
-          return next();
-        } else {
-          response.status(401).send({
+        if (err)
+          return response.status(401).send({
             message: 'Invalid token or expired.'
           });
-        }
+        request.userId = decoded.id;
+        return next();
       });
     }
   } catch (err) {
-    response.status(400).send({ err });
+    return response.status(400).send({ err });
   }
 };
