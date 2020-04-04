@@ -99,6 +99,19 @@ class AuthControler {
           passwordResetExpires: now
         }
       });
+
+      await transporter.sendMail({
+        to: email,
+        from: 'icm@listadelouvores.com',
+        subject: 'Redefinição de senha',
+        html: `
+            <p>Você solicitou uma redefinição de senha para sua conta.</p>
+            <br/>
+            <p>Clique neste <a href="${process.env.FRONTEND_URL ||
+              'http://localhost:3000/'}reset-password/${token}">link</a> para redefinir sua senha.</p>
+          `
+      });
+
       return response.status(200).send({
         message: 'Sended token.',
         resetPasswordToken: token
@@ -137,6 +150,8 @@ class AuthControler {
 
       user.password = password;
       user.updatedAt = new Date();
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
 
       await user.save();
 
