@@ -107,13 +107,14 @@ class AuthControler {
         html: `
             <p>Você solicitou uma redefinição de senha para sua conta.</p>
             <br/>
-            <p>Clique neste <a href="${process.env.FRONTEND_URL ||
-              'http://localhost:3000/'}reset-password/${token}">link</a> para redefinir sua senha.</p>
+            <p>Clique neste <a href="${
+              process.env.FRONTEND_URL || 'http://localhost:3000/'
+            }reset-password/${token}">link</a> para redefinir sua senha.</p>
           `
       });
 
       return response.status(200).send({
-        message: 'Sended token.',
+        message: 'Token sent by email.',
         resetPasswordToken: token
       });
     } catch (err) {
