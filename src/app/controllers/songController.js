@@ -10,7 +10,7 @@ class SongController {
           ? 'Songs loaded.'
           : 'There are no songs registered.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on finding songs.'
       });
@@ -24,7 +24,7 @@ class SongController {
         data: song,
         message: song !== null ? 'Song founded.' : 'Song not founded'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on finding song.'
       });
@@ -49,7 +49,7 @@ class SongController {
           message: 'Song inserted.'
         })
       );
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on inserting song.'
       });
@@ -77,7 +77,7 @@ class SongController {
         data: song,
         message: 'Song updated.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on updating song.'
       });
@@ -90,7 +90,7 @@ class SongController {
       return response.status(200).send({
         message: 'Song removed.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on removing song.'
       });

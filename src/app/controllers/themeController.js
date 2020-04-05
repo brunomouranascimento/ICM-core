@@ -11,7 +11,7 @@ class ThemeController {
           ? 'Themes loaded.'
           : 'There are no themes registered.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on finding themes.'
       });
@@ -25,7 +25,7 @@ class ThemeController {
         data: theme,
         message: theme !== null ? 'Theme founded.' : 'Theme not founded'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on finding theme.'
       });
@@ -45,7 +45,7 @@ class ThemeController {
       });
 
       await Promise.all(
-        songs.map(async (song) => {
+        songs.map(async song => {
           const themeSong = new Song({
             ...song,
             theme: theme._id,
@@ -64,7 +64,7 @@ class ThemeController {
         data: theme,
         message: 'Theme inserted.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on inserting theme.'
       });
@@ -90,7 +90,7 @@ class ThemeController {
       theme.updatedAt = new Date();
       theme.updatedBy = request.userId;
       await Promise.all(
-        songs.map(async (song) => {
+        songs.map(async song => {
           const themeSong = new Song({
             ...song,
             theme: theme._id,
@@ -109,7 +109,7 @@ class ThemeController {
         data: theme,
         message: 'Theme updated.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on updating theme.'
       });
@@ -122,7 +122,7 @@ class ThemeController {
       return response.status(200).send({
         message: 'Theme removed.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on removing theme.'
       });

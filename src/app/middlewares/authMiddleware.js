@@ -9,7 +9,8 @@ module.exports = (request, response, next) => {
       request.originalUrl === '/authenticate' ||
       request.originalUrl === '/register' ||
       request.originalUrl === '/forgot-password' ||
-      request.originalUrl.includes('/reset-password')
+      request.originalUrl.includes('/reset-password') ||
+      request.originalUrl.includes('/check-token')
     ) {
       return next();
     } else {
@@ -32,8 +33,8 @@ module.exports = (request, response, next) => {
           message: 'Malformatted token.'
         });
 
-      jwt.verify(token, authConfig.secret, (err, decoded) => {
-        if (err)
+      jwt.verify(token, authConfig.secret, (error, decoded) => {
+        if (error)
           return response.status(401).send({
             message: 'Invalid token or expired.'
           });
@@ -41,7 +42,7 @@ module.exports = (request, response, next) => {
         return next();
       });
     }
-  } catch (err) {
-    return response.status(400).send({ err });
+  } catch (error) {
+    return response.status(400).send({ error });
   }
 };

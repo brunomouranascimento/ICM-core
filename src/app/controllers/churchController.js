@@ -10,7 +10,7 @@ class ChurchController {
           ? 'Churchs loaded.'
           : 'There are no churchs registered.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on finding churchs.'
       });
@@ -24,7 +24,7 @@ class ChurchController {
         data: church,
         message: church !== null ? 'Church founded.' : 'Church not founded.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on finding church.'
       });
@@ -47,7 +47,7 @@ class ChurchController {
         data: church,
         message: 'Church inserted.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on inserting church.'
       });
@@ -75,7 +75,7 @@ class ChurchController {
         data: church,
         message: 'Church updated.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send(
         new Result({
           message: 'Error on updating church.'
@@ -90,7 +90,7 @@ class ChurchController {
       return response.status(200).send({
         message: 'Church removed.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on removing church.'
       });

@@ -10,8 +10,8 @@ class AuditController {
           ? 'Audits loaded.'
           : 'There are no audits registered.'
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   }
 }

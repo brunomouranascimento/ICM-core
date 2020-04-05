@@ -53,11 +53,11 @@ module.exports = (request, response, next) => {
       let body = [];
       let requestErrorMessage = null;
 
-      const getChunk = (chunk) => body.push(chunk);
+      const getChunk = chunk => body.push(chunk);
       const assembleBody = () => {
         body = Buffer.concat(body).toString();
       };
-      const getError = (error) => {
+      const getError = error => {
         requestErrorMessage = error.message;
       };
       request.on('data', getChunk);
@@ -68,7 +68,7 @@ module.exports = (request, response, next) => {
         removeHandlers();
         log(request, response, 'Client aborted.');
       };
-      const logError = (error) => {
+      const logError = error => {
         removeHandlers();
         log(request, response, error.message);
       };
@@ -90,7 +90,7 @@ module.exports = (request, response, next) => {
       };
     }
     next();
-  } catch (err) {
-    return response.status(400).send({ err });
+  } catch (error) {
+    return response.status(400).send({ error });
   }
 };

@@ -40,7 +40,7 @@ class AuthControler {
           token: generateToken({ id: user.id })
         });
       }
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Registration failed.'
       });
@@ -69,10 +69,10 @@ class AuthControler {
       response.send({
         data: user
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on authenticate, try again.',
-        text: err
+        text: error
       });
     }
   }
@@ -106,7 +106,7 @@ class AuthControler {
         subject: 'Redefinição de senha',
         html: `
             <p>Você solicitou uma redefinição de senha para sua conta.</p>
-            <p>Clique neste 
+            <p>Clique neste
               <a href="${
                 process.env.FRONTEND_URL || 'http://localhost:3000/'
               }reset-password/${token}">link</a> para redefinir sua senha.
@@ -120,7 +120,7 @@ class AuthControler {
         message: 'Token sent by email.',
         resetPasswordToken: token
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Error on forgot password, try again.'
       });
@@ -132,9 +132,9 @@ class AuthControler {
     const { token } = request.params;
 
     try {
-      const user = await User.findOne({ passwordResetToken: token }).select(
-        '+passwordResetToken passwordResetExpires'
-      );
+      const user = await User.findOne({
+        passwordResetToken: token
+      }).select('+passwordResetToken passwordResetExpires email');
 
       if (!user)
         return response.status(400).send({
@@ -160,12 +160,41 @@ class AuthControler {
 
       await user.save();
 
+      await transporter.sendMail({
+        to: user.email,
+        from: 'icm@listadelouvores.com',
+        subject: 'Senha alterada',
+        html: `<p>Sua senha foi alterada em ${new Date().toLocaleString()}!</p>`
+      });
+
       return response.status(200).send({
         message: 'Password updated.'
       });
-    } catch (err) {
+    } catch (error) {
       return response.status(400).send({
         message: 'Cannot reset password, try again.'
+      });
+    }
+  }
+
+  async checkToken(request, response) {
+    const { token } = request.params;
+
+    try {
+      const user = await User.findOne({
+        passwordResetToken: token
+      }).select('+passwordResetToken passwordResetExpires');
+
+      if (!user)
+        return response.status(400).send({
+          message: 'Invalid token.'
+        });
+      return response.status(200).send({
+        validToken: true
+      });
+    } catch (error) {
+      return response.status(400).send({
+        message: 'Cannot check token, try again.'
       });
     }
   }
