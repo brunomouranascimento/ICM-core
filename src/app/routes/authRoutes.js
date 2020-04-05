@@ -10,6 +10,6 @@ routes.use(authMiddleware);
 routes.post('/register', authController.register);
 routes.post('/authenticate', authController.authenticate);
 routes.post('/forgot-password', authController.forgotPassword);
-routes.post('/reset-password', authController.resetPassword);
+routes.post('/reset-password/:token', authController.resetPassword);
 
-module.exports = (app) => app.use('/', routes);
+module.exports = app => app.use('/', routes);

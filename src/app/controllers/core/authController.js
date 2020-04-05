@@ -106,10 +106,13 @@ class AuthControler {
         subject: 'Redefinição de senha',
         html: `
             <p>Você solicitou uma redefinição de senha para sua conta.</p>
-            <br/>
-            <p>Clique neste <a href="${
-              process.env.FRONTEND_URL || 'http://localhost:3000/'
-            }reset-password/${token}">link</a> para redefinir sua senha.</p>
+            <p>Clique neste 
+              <a href="${
+                process.env.FRONTEND_URL || 'http://localhost:3000/'
+              }reset-password/${token}">link</a> para redefinir sua senha.
+            </p>
+
+            <i>Este link tem validade de <strong>1 hora.</strong></i>
           `
       });
 
@@ -125,21 +128,22 @@ class AuthControler {
   }
 
   async resetPassword(request, response) {
-    const { email, token, password } = request.body;
+    const { password } = request.body;
+    const { token } = request.params;
 
     try {
-      const user = await User.findOne({ email }).select(
+      const user = await User.findOne({ passwordResetToken: token }).select(
         '+passwordResetToken passwordResetExpires'
       );
 
       if (!user)
         return response.status(400).send({
-          message: 'User not found.'
+          message: 'Invalid token.'
         });
 
       if (token !== user.passwordResetToken)
         return response.status(401).send({
-          message: 'invalid token.'
+          message: 'Invalid token.'
         });
 
       const now = new Date();

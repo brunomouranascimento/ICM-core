@@ -9,7 +9,7 @@ module.exports = (request, response, next) => {
       request.originalUrl === '/authenticate' ||
       request.originalUrl === '/register' ||
       request.originalUrl === '/forgot-password' ||
-      request.originalUrl === '/reset-password'
+      request.originalUrl.includes('/reset-password')
     ) {
       return next();
     } else {

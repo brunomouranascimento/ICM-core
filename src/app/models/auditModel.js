@@ -6,8 +6,7 @@ const AuditSchema = new mongoose.Schema({
     required: true
   },
   statusMessage: {
-    type: String,
-    required: true
+    type: String
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
