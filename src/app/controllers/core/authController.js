@@ -6,6 +6,7 @@ const authConfig = require('../../../config/authConfig.json');
 const transporter = require('../../../config/mailConfig');
 
 const User = require('../../models/userModel');
+const validEmail = require('../../../utils/util');
 
 const generateToken = (params = {}) => {
   return jwt.sign(params, authConfig.secret, {
@@ -17,6 +18,12 @@ class AuthControler {
   async register(request, response) {
     try {
       const { email } = request.body;
+
+      if (!email.match(validEmail)) {
+        return response.status(400).send({
+          message: 'Invalid e-mail.'
+        });
+      }
 
       if (await User.findOne({ email })) {
         return response.status(400).send({

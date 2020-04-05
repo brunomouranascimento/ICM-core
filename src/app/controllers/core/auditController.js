@@ -11,7 +11,7 @@ class AuditController {
           : 'There are no audits registered.'
       });
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
   }
 }
