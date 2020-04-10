@@ -1,9 +1,15 @@
 const Song = require('../models/songModel');
 
+const SONGS_PER_PAGE = 3;
+
 class SongController {
   async index(request, response) {
     try {
-      const songs = await Song.find().populate('user');
+      const page = request.query.page;
+      const songs = await Song.find()
+        .skip((page - 1) * SONGS_PER_PAGE)
+        .limit(SONGS_PER_PAGE)
+        .populate('user');
       return response.status(200).send({
         data: songs,
         message: songs.length
