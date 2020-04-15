@@ -72,10 +72,6 @@ class SongController {
         userId
       );
 
-      song.updatedAt = new Date();
-      song.updatedBy = request.userId;
-
-      await song.save();
       return response.status(200).send({
         data: song,
         message: 'Song updated.'

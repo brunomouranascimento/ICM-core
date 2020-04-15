@@ -59,10 +59,6 @@ class ChurchController {
         userId
       );
 
-      church.updatedAt = new Date();
-      church.updatedBy = request.userId;
-
-      await church.save();
       return response.status(200).send({
         data: church,
         message: 'Church updated.'

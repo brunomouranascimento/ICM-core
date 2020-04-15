@@ -1,4 +1,3 @@
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
@@ -6,7 +5,6 @@ const authConfig = require('../../../config/authConfig.json');
 const transporter = require('../../../config/mailConfig');
 
 const User = require('../../models/userModel');
-const validEmail = require('../../../utils/util');
 
 const generateToken = (params = {}) => {
   return jwt.sign(params, authConfig.secret, {

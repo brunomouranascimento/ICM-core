@@ -1,19 +1,9 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 
-const authConfig = require('../../../config/authConfig.json');
-const transporter = require('../../../config/mailConfig');
+const repository = require('../../repositories/core/authRepository');
 
-const User = require('../../models/userModel');
 const validEmail = require('../../../utils/util');
 
-const generateToken = (params = {}) => {
-  return jwt.sign(params, authConfig.secret, {
-    expiresIn: 86400
-  });
-};
-const repository = require('../../repositories/core/authRepository');
 class AuthControler {
   async register(request, response) {
     try {
@@ -101,7 +91,7 @@ class AuthControler {
     const { token } = request.params;
 
     try {
-      const user = await repository.resetPassword(token, password);
+      await repository.resetPassword(token, password);
 
       return response.status(200).send({
         message: 'Password updated.'
