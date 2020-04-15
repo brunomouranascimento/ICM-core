@@ -1,15 +1,12 @@
-const Theme = require('../models/themeModel');
-const Song = require('../models/songModel');
+const repository = require('../repositories/themeRepository');
 
 class ThemeController {
   async index(request, response) {
     try {
-      const themes = await Theme.find().populate(['user', 'songs']);
+      const themes = await repository.index();
       return response.status(200).send({
         data: themes,
-        message: themes.length
-          ? 'Themes loaded.'
-          : 'There are no themes registered.'
+        message: themes.length ? 'Themes loaded.' : 'Themes not found.'
       });
     } catch (error) {
       return response.status(400).send({
@@ -20,7 +17,7 @@ class ThemeController {
 
   async show(request, response) {
     try {
-      const theme = await Theme.findById(request.params.id);
+      const theme = await repository.show(request.params.id);
       return response.status(200).send({
         data: theme,
         message: theme !== null ? 'Theme founded.' : 'Theme not founded'
@@ -35,30 +32,9 @@ class ThemeController {
   async store(request, response) {
     try {
       const { name, songs } = request.body;
+      const userId = request.userId;
 
-      const maxThemeId = await Theme.findOne().sort({ themeId: -1 });
-
-      const theme = await Theme.create({
-        name,
-        themeId: maxThemeId.themeId + 1,
-        createdBy: request.userId
-      });
-
-      await Promise.all(
-        songs.map(async song => {
-          const themeSong = new Song({
-            ...song,
-            theme: theme._id,
-            createdBy: request.userId
-          });
-
-          await themeSong.save();
-
-          theme.songs.push(themeSong);
-        })
-      );
-
-      await theme.save();
+      const theme = await repository.store(name, songs, userId);
 
       return response.status(200).send({
         data: theme,
@@ -74,36 +50,14 @@ class ThemeController {
   async update(request, response) {
     try {
       const { name, songs } = request.body;
+      const userId = request.userId;
 
-      const theme = await Theme.findByIdAndUpdate(
+      const theme = await repository.update(
         request.params.id,
-        {
-          name
-        },
-        { new: true }
+        name,
+        songs,
+        userId
       );
-
-      theme.songs = [];
-
-      await Song.remove({ theme: theme._id });
-
-      theme.updatedAt = new Date();
-      theme.updatedBy = request.userId;
-      await Promise.all(
-        songs.map(async song => {
-          const themeSong = new Song({
-            ...song,
-            theme: theme._id,
-            createdBy: request.userId
-          });
-
-          await themeSong.save();
-
-          theme.songs.push(themeSong);
-        })
-      );
-
-      await theme.save();
 
       return response.status(200).send({
         data: theme,
@@ -118,7 +72,7 @@ class ThemeController {
 
   async destroy(request, response) {
     try {
-      await Theme.findByIdAndRemove(request.params.id);
+      await repository.destroy(request.params.id);
       return response.status(200).send({
         message: 'Theme removed.'
       });

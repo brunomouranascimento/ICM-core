@@ -10,22 +10,6 @@ const SongSchema = new mongoose.Schema({
     ref: 'Theme',
     required: true
   },
-  // theme: {
-  //   type: String,
-  //   enum: [
-  //     'Pleading',
-  //     'Invocation and Communion',
-  //     'Death, Ressurection and Salvation',
-  //     'Dedication',
-  //     'Comfort and Encouragement',
-  //     'Sanctification and Outpouring of the Holy Spirit',
-  //     'Eternity and the Return of Jesus',
-  //     'Praise',
-  //     'Praise Group',
-  //     'Children And Adolescents'
-  //   ],
-  //   required: true
-  // },
   lastPlayed: {
     type: Date
   },

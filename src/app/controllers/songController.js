@@ -1,20 +1,25 @@
-const Song = require('../models/songModel');
-
-const SONGS_PER_PAGE = 3;
+const repository = require('../repositories/songRepository');
 
 class SongController {
   async index(request, response) {
     try {
-      const page = request.query.page;
-      const songs = await Song.find()
-        .skip((page - 1) * SONGS_PER_PAGE)
-        .limit(SONGS_PER_PAGE)
-        .populate('user');
+      const page = request.query.page || 1;
+      const songs = await repository.index(page);
+      const {
+        data,
+        totalCount,
+        hasNextPage,
+        hasPreviousPage,
+        lastPage,
+        message
+      } = songs;
       return response.status(200).send({
-        data: songs,
-        message: songs.length
-          ? 'Songs loaded.'
-          : 'There are no songs registered.'
+        data,
+        totalCount,
+        hasNextPage,
+        hasPreviousPage,
+        lastPage,
+        message
       });
     } catch (error) {
       return response.status(400).send({
@@ -25,7 +30,7 @@ class SongController {
 
   async show(request, response) {
     try {
-      const song = await Song.findById(request.params.id);
+      const song = await repository.show(request.params.id);
       return response.status(200).send({
         data: song,
         message: song !== null ? 'Song founded.' : 'Song not founded'
@@ -40,21 +45,14 @@ class SongController {
   async store(request, response) {
     try {
       const { name, theme } = request.body;
+      const userId = request.userId;
 
-      const song = await Song.create({
-        name,
-        theme: Song.schema.path('theme').enumValues[theme],
-        createdBy: request.userId
+      const song = await repository.store(name, theme, userId);
+
+      return response.status(200).send({
+        data: song,
+        message: 'Song inserted.'
       });
-
-      await song.save();
-
-      return response.status(200).send(
-        new Result({
-          data: song,
-          message: 'Song inserted.'
-        })
-      );
     } catch (error) {
       return response.status(400).send({
         message: 'Error on inserting song.'
@@ -65,14 +63,13 @@ class SongController {
   async update(request, response) {
     try {
       const { name, theme } = request.body;
+      const userId = request.userId;
 
-      const song = await Song.findByIdAndUpdate(
+      const song = await repository.update(
         request.params.id,
-        {
-          name,
-          theme: Song.schema.path('theme').enumValues[theme]
-        },
-        { new: true }
+        name,
+        theme,
+        userId
       );
 
       song.updatedAt = new Date();
@@ -92,7 +89,7 @@ class SongController {
 
   async destroy(request, response) {
     try {
-      await Song.findByIdAndRemove(request.params.id);
+      await repository.destroy(request.params.id);
       return response.status(200).send({
         message: 'Song removed.'
       });
