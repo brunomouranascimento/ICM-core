@@ -36,7 +36,7 @@ class ThemeController {
 
       const theme = await repository.store(name, songs, userId);
 
-      return response.status(200).send({
+      return response.status(201).send({
         data: theme,
         message: 'Theme inserted.'
       });
