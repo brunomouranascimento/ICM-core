@@ -49,7 +49,7 @@ class SongController {
 
       const song = await repository.store(name, theme, userId);
 
-      return response.status(200).send({
+      return response.status(201).send({
         data: song,
         message: 'Song inserted.'
       });

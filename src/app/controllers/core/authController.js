@@ -24,7 +24,7 @@ class AuthControler {
         });
       }
 
-      return response.status(200).send({
+      return response.status(201).send({
         data,
         message,
         token

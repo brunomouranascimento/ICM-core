@@ -36,7 +36,7 @@ class ChurchController {
 
       const church = await repository.store(name, address, userId);
 
-      return response.status(200).send({
+      return response.status(201).send({
         data: church,
         message: 'Church inserted.'
       });
