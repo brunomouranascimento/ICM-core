@@ -1,56 +1,56 @@
 const repository = require('../repositories/churchRepository');
 
-class ChurchController {
+module.exports = {
   async index(request, response) {
     try {
       const churchs = await repository.index();
       return response.status(200).send({
         data: churchs,
-        message: churchs.length ? 'Churchs loaded.' : 'Churchs not found.'
+        message: churchs.length ? 'Churchs loaded.' : 'Churchs not found.',
       });
     } catch (error) {
       return response.status(400).send({
-        message: 'Error on finding churchs.'
+        message: 'Error on finding churchs.',
       });
     }
-  }
+  },
 
   async show(request, response) {
     try {
       const church = await repository.show(request.params.id);
       return response.status(200).send({
         data: church,
-        message: church !== null ? 'Church founded.' : 'Church not founded.'
+        message: church !== null ? 'Church founded.' : 'Church not founded.',
       });
     } catch (error) {
       return response.status(400).send({
-        message: 'Error on finding church.'
+        message: 'Error on finding church.',
       });
     }
-  }
+  },
 
   async store(request, response) {
     try {
       const { name, address } = request.body;
-      const userId = request.userId;
+      const { userId } = request;
 
       const church = await repository.store(name, address, userId);
 
       return response.status(201).send({
         data: church,
-        message: 'Church inserted.'
+        message: 'Church inserted.',
       });
     } catch (error) {
       return response.status(400).send({
-        message: 'Error on inserting church.'
+        message: 'Error on inserting church.',
       });
     }
-  }
+  },
 
   async update(request, response) {
     try {
       const { name, address } = request.body;
-      const userId = request.userId;
+      const { userId } = request;
 
       const church = await repository.update(
         request.params.id,
@@ -61,27 +61,25 @@ class ChurchController {
 
       return response.status(200).send({
         data: church,
-        message: 'Church updated.'
+        message: 'Church updated.',
       });
     } catch (error) {
       return response.status(400).send({
-        message: 'Error on updating church.'
+        message: 'Error on updating church.',
       });
     }
-  }
+  },
 
   async destroy(request, response) {
     try {
       await repository.destroy(request.params.id);
       return response.status(200).send({
-        message: 'Church removed.'
+        message: 'Church removed.',
       });
     } catch (error) {
       return response.status(400).send({
-        message: 'Error on removing church.'
+        message: 'Error on removing church.',
       });
     }
-  }
-}
-
-module.exports = new ChurchController();
+  },
+};

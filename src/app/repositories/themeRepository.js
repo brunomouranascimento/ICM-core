@@ -4,17 +4,17 @@ const Song = require('../models/songModel');
 class ThemeRepository {
   async index() {
     try {
-      const themes = await Theme.find().populate(['user', 'songs']);
-      return themes;
+      this.themes = await Theme.find().populate(['user', 'songs']);
+      return this.themes;
     } catch (error) {
-      return;
+      return error;
     }
   }
 
   async show(id) {
     try {
-      const theme = await Theme.findById(id);
-      return theme;
+      this.theme = await Theme.findById(id);
+      return this.theme;
     } catch (error) {
       return error;
     }
@@ -22,20 +22,20 @@ class ThemeRepository {
 
   async store(name, songs, userId) {
     try {
-      const maxThemeId = await Theme.findOne().sort({ themeId: -1 });
+      this.maxThemeId = await Theme.findOne().sort({ themeId: -1 });
 
       const theme = await Theme.create({
         name,
-        themeId: maxThemeId.themeId + 1,
-        createdBy: userId
+        themeId: this.maxThemeId.themeId + 1,
+        createdBy: userId,
       });
 
       await Promise.all(
-        songs.map(async song => {
+        songs.map(async (song) => {
           const themeSong = new Song({
             ...song,
             theme: theme._id,
-            createdBy: userId
+            createdBy: userId,
           });
 
           await themeSong.save();
@@ -54,37 +54,37 @@ class ThemeRepository {
 
   async update(id, name, songs, userId) {
     try {
-      const theme = await Theme.findByIdAndUpdate(
+      this.theme = await Theme.findByIdAndUpdate(
         id,
         {
-          name
+          name,
         },
         { new: true }
       );
 
-      theme.songs = [];
+      this.theme.songs = [];
 
       await Song.deleteOne({ theme: theme._id });
 
-      theme.updatedAt = new Date();
-      theme.updatedBy = userId;
+      this.theme.updatedAt = new Date();
+      this.theme.updatedBy = userId;
       await Promise.all(
-        songs.map(async song => {
+        songs.map(async (song) => {
           const themeSong = new Song({
             ...song,
             theme: theme._id,
-            createdBy: userId
+            createdBy: userId,
           });
 
           await themeSong.save();
 
-          theme.songs.push(themeSong);
+          this.theme.songs.push(themeSong);
         })
       );
 
-      await theme.save();
+      await this.theme.save();
 
-      return theme;
+      return this.theme;
     } catch (error) {
       return error;
     }

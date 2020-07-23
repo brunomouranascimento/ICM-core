@@ -5,44 +5,44 @@ const authConfig = require('../../../config/authConfig.json');
 const transporter = require('../../../config/mailConfig');
 
 const User = require('../../models/userModel');
+const { model } = require('../../models/userModel');
 
 const generateToken = (params = {}) => {
   return jwt.sign(params, authConfig.secret, {
-    expiresIn: 86400
+    expiresIn: 86400,
   });
 };
 
-class AuthRepository {
-  async register(userData, response) {
+module.exports = {
+  async register(userData) {
     try {
       const { email } = userData;
 
       if (await User.findOne({ email })) {
-        response.status(400)({
-          message: 'User already exists.'
-        });
-      } else {
-        const user = await User.create(userData);
-
-        await transporter.sendMail({
-          to: email,
-          from: 'icm@listadelouvores.com',
-          subject: 'Cadastro realizado',
-          html: '<h1>Seu cadastro foi realizado com sucesso!</h1>'
-        });
-
-        user.password = undefined;
-
         return {
-          data: user,
-          message: 'User created, confirmation e-mail sended.',
-          token: generateToken({ id: user.id })
+          message: 'User already exists.',
         };
       }
+
+      const user = await User.create(userData);
+      await transporter.sendMail({
+        to: email,
+        from: 'icm@listadelouvores.com',
+        subject: 'Cadastro realizado',
+        html: '<h1>Seu cadastro foi realizado com sucesso!</h1>',
+      });
+
+      user.password = undefined;
+
+      return {
+        data: user,
+        message: 'User created, confirmation e-mail sended.',
+        token: generateToken({ id: user.id }),
+      };
     } catch (error) {
       return error;
     }
-  }
+  },
 
   async authenticate(email) {
     try {
@@ -52,9 +52,9 @@ class AuthRepository {
 
       return user;
     } catch (error) {
-      error;
+      return error;
     }
-  }
+  },
 
   async forgotPassword(email) {
     try {
@@ -68,8 +68,8 @@ class AuthRepository {
       await User.findByIdAndUpdate(user.id, {
         $set: {
           passwordResetToken: token,
-          passwordResetExpires: now
-        }
+          passwordResetExpires: now,
+        },
       });
 
       await transporter.sendMail({
@@ -85,7 +85,7 @@ class AuthRepository {
             </p>
 
             <i>Este link tem validade de <strong>1 hora.</strong></i>
-          `
+          `,
       });
 
       user.passwordResetToken = token;
@@ -94,30 +94,33 @@ class AuthRepository {
     } catch (error) {
       return error;
     }
-  }
+  },
 
   async resetPassword(token, password) {
     try {
       const user = await User.findOne({
-        passwordResetToken: token
+        passwordResetToken: token,
       }).select('+passwordResetToken passwordResetExpires email');
 
-      if (!user)
-        response.status(400)({
-          message: 'Invalid token.'
-        });
+      if (!user) {
+        return {
+          message: 'Invalid token.',
+        };
+      }
 
-      if (token !== user.passwordResetToken)
-        response.status(401)({
-          message: 'Invalid token.'
-        });
+      if (token !== user.passwordResetToken) {
+        return {
+          message: 'Invalid token.',
+        };
+      }
 
       const now = new Date();
 
-      if (now > user.passwordResetExpires)
-        response.status(401)({
-          message: 'Token expired, generate a new one.'
-        });
+      if (now > user.passwordResetExpires) {
+        return {
+          message: 'Token expired, generate a new one.',
+        };
+      }
 
       user.password = password;
       user.updatedAt = new Date();
@@ -130,25 +133,23 @@ class AuthRepository {
         to: user.email,
         from: 'icm@listadelouvores.com',
         subject: 'Senha alterada',
-        html: `<p>Sua senha foi alterada em ${new Date().toLocaleString()}!</p>`
+        html: `<p>Sua senha foi alterada em ${new Date().toLocaleString()}!</p>`,
       });
 
       return user;
     } catch (error) {
       return error;
     }
-  }
+  },
 
   async checkToken(token) {
     try {
       const user = await User.findOne({
-        passwordResetToken: token
+        passwordResetToken: token,
       }).select('+passwordResetToken passwordResetExpires');
       return user;
     } catch (error) {
       return error;
     }
-  }
-}
-
-module.exports = new AuthRepository();
+  },
+};

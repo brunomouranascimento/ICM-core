@@ -1,6 +1,6 @@
 const Church = require('../models/churchModel');
 
-class ChurchRepository {
+module.exports = {
   async index() {
     try {
       const churchs = await Church.find().populate(['createdBy', 'updatedBy']);
@@ -8,7 +8,7 @@ class ChurchRepository {
     } catch (error) {
       return error;
     }
-  }
+  },
 
   async show(id) {
     try {
@@ -17,14 +17,14 @@ class ChurchRepository {
     } catch (error) {
       return error;
     }
-  }
+  },
 
   async store(name, address, userId) {
     try {
       const church = await Church.create({
         name,
         address,
-        createdBy: userId
+        createdBy: userId,
       });
 
       await church.save();
@@ -33,7 +33,7 @@ class ChurchRepository {
     } catch (error) {
       return error;
     }
-  }
+  },
 
   async update(id, name, address, userId) {
     try {
@@ -41,7 +41,7 @@ class ChurchRepository {
         id,
         {
           name,
-          address
+          address,
         },
         { new: true }
       );
@@ -55,15 +55,14 @@ class ChurchRepository {
     } catch (error) {
       return error;
     }
-  }
+  },
 
   async destroy(id) {
     try {
       await Church.findByIdAndRemove(id);
+      return true;
     } catch (error) {
       return error;
     }
-  }
-}
-
-module.exports = new ChurchRepository();
+  },
+};

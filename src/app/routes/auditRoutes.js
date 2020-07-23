@@ -9,4 +9,4 @@ routes.use(auditMiddleware);
 
 routes.get('/audits', auditController.index);
 
-module.exports = app => app.use('/', routes);
+module.exports = (app) => app.use('/', routes);

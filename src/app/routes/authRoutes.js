@@ -13,4 +13,4 @@ routes.post('/forgot-password', authController.forgotPassword);
 routes.post('/reset-password/:token', authController.resetPassword);
 routes.get('/check-token/:token', authController.checkToken);
 
-module.exports = app => app.use('/', routes);
+module.exports = (app) => app.use('/', routes);

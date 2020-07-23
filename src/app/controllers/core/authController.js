@@ -4,37 +4,37 @@ const repository = require('../../repositories/core/authRepository');
 
 const validEmail = require('../../../utils/util');
 
-class AuthControler {
+module.exports = {
   async register(request, response) {
     try {
       const { email } = request.body;
 
       if (!email.match(validEmail)) {
         return response.status(400).send({
-          message: 'Invalid e-mail.'
+          message: 'Invalid e-mail.',
         });
       }
 
-      const user = await repository.register(request.body, response);
+      const user = await repository.register(request.body);
       const { data, message, token } = user;
 
-      if (user) {
+      if (!user.data) {
         return response.status(400).send({
-          message: 'User already exists.'
+          message: user.message,
         });
       }
 
       return response.status(201).send({
         data,
         message,
-        token
+        token,
       });
     } catch (error) {
       return response.status(400).send({
-        message: 'Registration failed.'
+        message: 'Registration failed.',
       });
     }
-  }
+  },
 
   async authenticate(request, response) {
     try {
@@ -44,26 +44,26 @@ class AuthControler {
 
       if (!user)
         return response.status(400).send({
-          message: 'User not found.'
+          message: 'User not found.',
         });
 
       if (!(await bcrypt.compare(password, user.password)))
         return response.status(401).send({
-          message: 'Invalid user/password.'
+          message: 'Invalid user/password.',
         });
 
       user.password = undefined;
 
       return response.status(200).send({
-        user
+        user,
       });
     } catch (error) {
       return response.status(400).send({
         message: 'Error on authenticate, try again.',
-        text: error
+        text: error,
       });
     }
-  }
+  },
 
   async forgotPassword(request, response) {
     const { email } = request.body;
@@ -73,35 +73,39 @@ class AuthControler {
 
       if (!user)
         return response.status(400).send({
-          message: 'User not found.'
+          message: 'User not found.',
         });
 
       return response.status(200).send({
-        message: 'Token sent by email.'
+        message: 'Token sent by email.',
       });
     } catch (error) {
       return response.status(400).send({
-        message: 'Error on forgot password, try again.'
+        message: 'Error on forgot password, try again.',
       });
     }
-  }
+  },
 
   async resetPassword(request, response) {
     const { password } = request.body;
     const { token } = request.params;
 
     try {
-      await repository.resetPassword(token, password);
+      const updatedPassword = await repository.resetPassword(token, password);
+
+      if (updatedPassword.message) {
+        return response.status(400).send({ message: updatedPassword.message });
+      }
 
       return response.status(200).send({
-        message: 'Password updated.'
+        message: 'Password updated.',
       });
     } catch (error) {
       return response.status(400).send({
-        message: 'Cannot reset password, try again.'
+        message: 'Cannot reset password, try again.',
       });
     }
-  }
+  },
 
   async checkToken(request, response) {
     const { token } = request.params;
@@ -111,17 +115,15 @@ class AuthControler {
 
       if (!user)
         return response.status(400).send({
-          message: 'Invalid token.'
+          message: 'Invalid token.',
         });
       return response.status(200).send({
-        validToken: true
+        validToken: true,
       });
     } catch (error) {
       return response.status(400).send({
-        message: 'Cannot check token, try again.'
+        message: 'Cannot check token, try again.',
       });
     }
-  }
-}
-
-module.exports = new AuthControler();
+  },
+};

@@ -1,6 +1,6 @@
 const Audit = require('../../models/auditModel');
 
-class AuditRepository {
+module.exports = {
   async index() {
     try {
       const audits = await Audit.find().populate('user');
@@ -8,7 +8,5 @@ class AuditRepository {
     } catch (error) {
       return error;
     }
-  }
-}
-
-module.exports = new AuditRepository();
+  },
+};

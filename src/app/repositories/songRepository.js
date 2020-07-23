@@ -2,7 +2,7 @@ const Song = require('../models/songModel');
 
 const SONGS_PER_PAGE = 3;
 
-class songRepository {
+module.exports = {
   async index(page) {
     try {
       const totalSongs = await Song.find().countDocuments();
@@ -16,12 +16,12 @@ class songRepository {
         hasNextPage: SONGS_PER_PAGE * page < totalSongs,
         hasPreviousPage: page > 1,
         lastPage: Math.ceil(totalSongs / SONGS_PER_PAGE),
-        message: songs.length ? 'Songs loaded.' : 'Songs not found.'
+        message: songs.length ? 'Songs loaded.' : 'Songs not found.',
       };
     } catch (error) {
       return error;
     }
-  }
+  },
 
   async show(id) {
     try {
@@ -30,14 +30,14 @@ class songRepository {
     } catch (error) {
       return error;
     }
-  }
+  },
 
   async store(name, theme, userId) {
     try {
       const song = await Song.create({
         name,
         theme,
-        createdBy: userId
+        createdBy: userId,
       });
 
       await song.save();
@@ -46,7 +46,7 @@ class songRepository {
     } catch (error) {
       return error;
     }
-  }
+  },
 
   async update(id, name, theme, userId) {
     try {
@@ -54,7 +54,7 @@ class songRepository {
         id,
         {
           name,
-          theme
+          theme,
         },
         { new: true }
       );
@@ -68,15 +68,14 @@ class songRepository {
     } catch (error) {
       return error;
     }
-  }
+  },
 
   async destroy(id) {
     try {
       await Song.findByIdAndRemove(id);
+      return true;
     } catch (error) {
       return error;
     }
-  }
-}
-
-module.exports = new songRepository();
+  },
+};
